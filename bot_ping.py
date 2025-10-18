@@ -1,6 +1,6 @@
 import os, time, requests
 
-BOT_TOKEN = os.getenv("BOT_TOKEN") or "7833050610:AAGiUAOwag6_i71aC2N32NYpGhrN196j7_o"
+BOT_TOKEN = os.getenv("BOT_TOKEN") or ""
 BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 def api(method, **params):
@@ -33,3 +33,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
