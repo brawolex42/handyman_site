@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Anmelden — Mann für eine Stunde{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 mt-8">
+  <h1 class="text-2xl font-bold mb-4">{% trans "Anmelden" %}</h1>
+
+  {% if form.non_field_errors %}
+    <div class="mb-4 p-3 rounded bg-red-100 text-red-800">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}" class="space-y-4" novalidate>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+    <div>
+      <label for="id_username" class="block text-sm font-medium mb-1">{% trans "Benutzername" %}</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_password" class="block text-sm font-medium mb-1">{% trans "Passwort" %}</label>
+      {{ form.password }}
+      {% if form.password.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.password.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center justify-between pt-2">
+      <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        {% trans "Einloggen" %}
+      </button>
+      <a class="text-sm underline" href="{% url 'password_reset' %}">
+        {% trans "Passwort vergessen?" %}
+      </a>
+    </div>
+  </form>
+
+  <p class="mt-4 text-sm">
+    {% trans "Kein Konto?" %} <a class="underline" href="{% url 'register' %}">{% trans "Registrieren" %}</a>
+  </p>
+</div>
+{% endblock %}

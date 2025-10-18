@@ -1,0 +1,105 @@
+{% load i18n %}
+{% load static %}
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}Mann für eine Stunde — Potsdam & Berlin{% endblock %}</title>
+  {% block meta %}{% endblock %}
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white/90 backdrop-blur shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold">{% trans "Mann für eine Stunde" %}</a>
+
+      <nav class="flex items-center gap-3">
+        <!-- Sprache -->
+        <form method="post" action="/i18n/setlang/" class="inline">{% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="hidden" name="language" value="de">
+          <button type="submit" class="underline">DE</button>
+        </form>
+        <form method="post" action="/i18n/setlang/" class="inline">{% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="hidden" name="language" value="en">
+          <button type="submit" class="underline">EN</button>
+        </form>
+
+        <a class="hover:underline" href="/services/">{% trans "Leistungen & Preise" %}</a>
+        <a class="hover:underline" href="/booking/">{% trans "Auftrag erstellen" %}</a>
+        <a class="hover:underline" href="/reviews/">{% trans "Bewertungen" %}</a>
+
+        {% if request.user.is_authenticated %}
+          <a class="hover:underline" href="/dashboard/">{% trans "Konto" %}</a>
+          {% if request.user.is_staff %}
+            <a class="hover:underline font-semibold" href="/owner/">Owner</a>
+            <a class="hover:underline font-semibold" href="/admin/">Admin</a>
+          {% endif %}
+          <!-- Logout nur POST -->
+          <form method="post" action="{% url 'logout' %}" class="inline m-0 p-0">{% csrf_token %}
+            <button type="submit" class="hover:underline bg-transparent border-0 p-0 align-baseline">
+              {% trans "Abmelden" %}
+            </button>
+          </form>
+        {% else %}
+          <a class="hover:underline" href="/login/">{% trans "Anmelden" %}</a>
+          <a class="hover:underline" href="/register/">{% trans "Registrieren" %}</a>
+          <a class="hover:underline text-sm opacity-80" href="/admin/">Admin</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative min-h-[50vh] md:min-h-[60vh]">
+    <div class="absolute inset-0 -z-10">
+      <img src="{% static 'hero.jpg' %}" alt="Handwerker" class="w-full h-full object-contain bg-black"/>
+      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-12 md:py-16 text-white grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-md">
+          {% trans "Zuverlässiger Handwerker für Zuhause" %}
+        </h1>
+        <p class="mt-4 text-white/95 text-lg">
+          {% trans "Elektrik, Sanitär, Möbelmontage/Tragen, Geräteinstallation — schnell, sauber, mit Garantie." %}
+        </p>
+        <p class="mt-2 text-white/95 text-lg">
+          {% trans "Grundtarif" %}: <b>{{ rate|default:18 }} € / {% trans "Stunde" %}</b>
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="/booking/" class="px-5 py-3 bg-white text-blue-700 font-semibold rounded-xl shadow">{% trans "Auftrag erstellen" %}</a>
+          <a href="/services/" class="px-5 py-3 bg-white/10 ring-1 ring-white/30 rounded-xl">{% trans "Leistungen & Preise" %}</a>
+          <a href="https://wa.me/4915229084569" class="px-5 py-3 bg-emerald-500/90 rounded-xl">WhatsApp</a>
+          <a href="https://t.me/sakilev" class="px-5 py-3 bg-sky-500/90 rounded-xl">Telegram</a>
+        </div>
+      </div>
+      <div class="bg-white/10 rounded-2xl p-6 ring-1 ring-white/20 backdrop-blur-sm">
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-white/95">
+          <li>✓ {% trans "Stromproblem beheben" %}</li>
+          <li>✓ {% trans "Sanitär" %}</li>
+          <li>✓ {% trans "Möbel montieren" %}</li>
+          <li>✓ {% trans "Möbel tragen" %}</li>
+          <li>✓ {% trans "Geräte installieren" %}</li>
+          <li>✓ {% trans "Grundstück reinigen" %}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    {% for message in messages %}
+      <div class="mb-4 p-3 rounded bg-green-100 text-green-800">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="py-10 text-center text-sm text-gray-500">
+    © 2025 {% trans "Mann für eine Stunde" %} — Potsdam / Berlin · {% trans "Tel." %}: +49 1522 9084569 · E-Mail: sakilev.aleksandr@gmail.com
+  </footer>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Leistungen & Preise" %} — Mann für eine Stunde{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-6">{% trans "Leistungen & Preise" %}</h1>
+  {% if services %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for s in services %}
+        <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+          <a href="{% url 'service_detail' s.id %}" class="text-lg font-semibold mb-1 hover:underline">{{ s.title }}</a>
+          <div class="text-sm text-gray-600 mb-3">{{ s.description }}</div>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="text-blue-700 font-bold">{{ s.price_from }} € / {% trans 'Stunde' %}</span>
+            <a href="/booking/?service={{ s.id }}" class="px-3 py-2 bg-blue-600 text-white rounded">{% trans "Auftrag erstellen" %}</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-600">{% trans "Noch keine Leistungen." %}</p>
+  {% endif %}
+{% endblock %}

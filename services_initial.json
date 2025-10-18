@@ -1,0 +1,22 @@
+[
+  {"model": "core.service", "pk": 1, "fields": {
+    "title": "Мелкий ремонт электрики",
+    "category": "electric", "description": "Замена розеток/выключателей, мелкий ремонт.",
+    "price_from": "18.00", "unit": "час", "duration_estimate": "1–2 часа", "is_active": true
+  }},
+  {"model": "core.service", "pk": 2, "fields": {
+    "title": "Сантехника: мелкий ремонт",
+    "category": "plumbing", "description": "Протечки, сифон, смеситель, замена прокладок.",
+    "price_from": "18.00", "unit": "час", "duration_estimate": "1–2 часа", "is_active": true
+  }},
+  {"model": "core.service", "pk": 3, "fields": {
+    "title": "Сборка мебели (IKEA и др.)",
+    "category": "furniture", "description": "Сборка стола, шкафа, полок.",
+    "price_from": "18.00", "unit": "час", "duration_estimate": "2–3 часа", "is_active": true
+  }},
+  {"model": "core.service", "pk": 4, "fields": {
+    "title": "Установка бытовой техники",
+    "category": "appliance", "description": "Подключение стиралок, посудомоек, ТВ на стену.",
+    "price_from": "18.00", "unit": "час", "duration_estimate": "1–2 часа", "is_active": true
+  }}
+]

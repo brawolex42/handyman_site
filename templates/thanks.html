@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Danke!" %}{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-xl shadow p-6">
+    <h1 class="text-2xl font-bold mb-2">{% trans "Danke!" %}</h1>
+    <p class="text-gray-700">{% trans "Ihre Anfrage wurde gesendet. Wir melden uns zur Bestätigung." %}</p>
+    <a href="/" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded">{% trans "Zur Startseite" %}</a>
+  </div>
+{% endblock %}

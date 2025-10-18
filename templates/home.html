@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load tz %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-6">{% trans "Willkommen!" %}</h1>
+
+  {% if featured %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for s in featured %}
+        <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+          <a href="{% url 'service_detail' s.id %}" class="text-lg font-semibold mb-1 hover:underline">{{ s.title }}</a>
+          <div class="text-sm text-gray-600 mb-3">{{ s.description }}</div>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="text-blue-700 font-bold">
+              {{ s.price_from|default:rate }} € / {% trans 'Stunde' %}
+            </span>
+            <a href="/booking/?service={{ s.id }}"
+               class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">
+              {% trans 'Auftrag erstellen' %}
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-600">{% trans 'Noch keine Leistungen.' %}</p>
+  {% endif %}
+
+  {% if last_reviews %}
+    <h2 class="text-xl font-semibold mt-10 mb-4">{% trans 'Letzte Bewertungen' %}</h2>
+    <div class="space-y-3">
+      {% for r in last_reviews %}
+        <div class="bg-white rounded-xl shadow p-4">
+          <div class="font-semibold">{{ r.customer_name }}</div>
+          <div class="text-yellow-600 text-sm mb-1">★ {{ r.rating }}/5</div>
+          <div class="text-gray-700">{{ r.text }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if request.user.is_authenticated and request.user.is_staff and staff_last %}
+    <div class="mt-10 bg-white rounded-xl shadow p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-semibold">Letzte Aufträge (nur für Sie)</h2>
+        <a href="/owner/" class="text-blue-600 underline">Alle öffnen</a>
+      </div>
+      <div class="divide-y">
+        {% for b in staff_last %}
+          <div class="py-3 flex gap-4 text-sm">
+            <div class="text-gray-500 w-28 shrink-0">{{ b.created_at|localtime|date:"d.m. H:i" }}</div>
+            <div class="grow">
+              <div class="font-medium">{{ b.name }} · {{ b.phone }}</div>
+              <div class="text-gray-600">
+                {% if b.service %}{{ b.service.title }}{% else %}—{% endif %}
+                {% if b.preferred_datetime %} · {{ b.preferred_datetime }}{% endif %}
+                {% if b.description %} · {{ b.description|truncatechars:120 }}{% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

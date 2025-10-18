@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Owner — {% trans "Dashboard" %}{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Owner · {% trans "Dashboard" %}</h1>
+
+<!-- Верхняя панель: вкладки и быстрые кнопки -->
+<div class="flex flex-wrap items-center gap-2 mb-4">
+  <!-- TABS -->
+  <a class="px-3 py-2 rounded text-sm {% if scope == 'active' %}bg-indigo-600 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}"
+     href="?scope=active{% if status %}&status={{ status }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if q %}&q={{ q }}{% endif %}">
+    Aktiv ({{ count_active }})
+  </a>
+  <a class="px-3 py-2 rounded text-sm {% if scope == 'archiv' %}bg-indigo-600 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}"
+     href="?scope=archiv{% if status %}&status={{ status }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if q %}&q={{ q }}{% endif %}">
+    Archiv ({{ count_archiv }})
+  </a>
+  <a class="px-3 py-2 rounded text-sm {% if scope == 'all' %}bg-indigo-600 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}"
+     href="?scope=all{% if status %}&status={{ status }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if q %}&q={{ q }}{% endif %}">
+    Alle ({{ count_all }})
+  </a>
+
+  <div class="ml-auto flex items-center gap-2">
+    <!-- Статистика -->
+    <a class="px-3 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 text-sm" href="{% url 'owner_stats' %}">
+      📊 Statistik
+    </a>
+
+    <!-- Экспорт CSV текущего списка -->
+    <a class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm"
+       href="{% url 'export_bookings_csv' %}{% if scope == 'archiv' %}?include_archiv=1{% elif scope == 'all' %}?include_archiv=1{% endif %}">
+      CSV exportieren
+    </a>
+  </div>
+</div>
+
+<!-- Фильтры -->
+<form method="get" class="bg-white rounded-xl shadow p-4 mb-4">
+  <input type="hidden" name="scope" value="{{ scope }}">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+    <div class="md:col-span-2">
+      <label class="block text-sm text-gray-600">{% trans "Status" %}</label>
+      <select name="status" class="w-full mt-1 px-3 py-2 border rounded-lg bg-white">
+        <option value="">{% trans "Alle" %}</option>
+        <option value="new" {% if status == 'new' %}selected{% endif %}>Neu</option>
+        <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Bestätigt</option>
+        <option value="done" {% if status == 'done' %}selected{% endif %}>Erledigt</option>
+        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Storniert</option>
+      </select>
+    </div>
+    <div class="md:col-span-2">
+      <label class="block text-sm text-gray-600">{% trans "Stadt" %}</label>
+      <input type="text" name="city" value="{{ city }}" class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="z.B. Potsdam">
+    </div>
+    <div class="md:col-span-6">
+      <label class="block text-sm text-gray-600">{% trans "Suche" %}</label>
+      <input type="text" name="q" value="{{ q }}" class="w-full mt-1 px-3 py-2 border rounded-lg"
+             placeholder="Name, E-Mail, Telefon, Adresse, Beschreibung">
+    </div>
+    <div class="md:col-span-2">
+      <button class="w-full px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">{% trans "Filtern" %}</button>
+    </div>
+  </div>
+</form>
+
+<!-- Таблица заявок -->
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-3 py-2 text-left">ID</th>
+        <th class="px-3 py-2 text-left">{% trans "Erstellt" %}</th>
+        <th class="px-3 py-2 text-left">Kunde</th>
+        <th class="px-3 py-2 text-left">{% trans "Service" %}</th>
+        <th class="px-3 py-2 text-left">{% trans "Wunschtermin" %}</th>
+        <th class="px-3 py-2 text-left">{% trans "Status" %}</th>
+        <th class="px-3 py-2 text-left">Kontakt</th>
+        <th class="px-3 py-2 text-right">{% trans "Aktionen" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr class="border-t align-top">
+        <td class="px-3 py-2">
+          <a class="underline" href="{% url 'owner_booking_detail' b.id %}">#{{ b.id }}</a>
+          {% if b.is_archived %}
+            <div><span class="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Archiv</span></div>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 whitespace-nowrap">{{ b.created_at|date:"d.m.Y H:i" }}</td>
+        <td class="px-3 py-2">
+          <div class="font-medium">{{ b.name }}</div>
+          <div class="text-gray-500">{{ b.city }}</div>
+        </td>
+        <td class="px-3 py-2">
+          {% if b.service %}{{ b.service.title }}{% elif b.service_preset %}<span class="text-gray-600">{{ b.service_preset }}</span>{% else %}—{% endif %}
+        </td>
+        <td class="px-3 py-2">{{ b.preferred_datetime|default:"—" }}</td>
+        <td class="px-3 py-2">
+          {{ b.get_status_display }}
+        </td>
+        <td class="px-3 py-2">
+          <div><a class="underline" href="mailto:{{ b.email }}">{{ b.email }}</a></div>
+          <div>{{ b.phone }}</div>
+        </td>
+        <td class="px-3 py-2 text-right">
+          <div class="flex flex-wrap justify-end gap-1">
+            <!-- DETAIL -->
+            <a href="{% url 'owner_booking_detail' b.id %}"
+               class="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">Details</a>
+
+            <!-- PDF -->
+            <a href="{% url 'booking_pdf' pk=b.id %}" target="_blank"
+               class="px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">PDF</a>
+
+            <!-- DONE (только для new) -->
+            {% if b.status == 'new' %}
+            <form method="post" action="{% url 'owner_booking_done' b.id %}" class="inline">
+              {% csrf_token %}
+              <button class="px-2 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700">Erledigt</button>
+            </form>
+            {% endif %}
+
+            <!-- ARCHIVE / RESTORE -->
+            {% if not b.is_archived %}
+              <form method="post" action="{% url 'owner_booking_archive' b.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-900">Archivieren</button>
+              </form>
+            {% else %}
+              <form method="post" action="{% url 'owner_booking_restore' b.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="px-2 py-1 rounded bg-green-100 hover:bg-green-200 text-green-800">Wiederherstellen</button>
+              </form>
+            {% endif %}
+
+            <!-- DELETE -->
+            <form method="post" action="{% url 'owner_booking_delete' b.id %}" class="inline"
+                  onsubmit="return confirm('Diesen Auftrag endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.');">
+              {% csrf_token %}
+              <button class="px-2 py-1 rounded bg-red-700 text-white hover:bg-red-800">Löschen</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-3 py-6 text-center text-gray-500">Keine Daten</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

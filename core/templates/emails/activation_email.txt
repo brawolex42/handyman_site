@@ -1,0 +1,10 @@
+Hallo {{ user.username }},
+
+bitte bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu aktivieren:
+
+{{ activate_url }}
+
+Wenn Sie dieses Konto nicht erstellt haben, ignorieren Sie bitte diese Nachricht.
+
+Mit freundlichen Grüßen,
+Ihr AleksHome Service Team

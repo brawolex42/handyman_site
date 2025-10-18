@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Registrieren" %} — Mann für eine Stunde{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 mt-8">
+  <h1 class="text-2xl font-bold mb-4">{% trans "Registrieren" %}</h1>
+
+  {# Flash-сообщения #}
+  {% if messages %}
+    {% for m in messages %}
+      {% if 'error' in m.tags %}
+        <div class="mb-3 p-3 rounded bg-red-100 text-red-800">{{ m }}</div>
+      {% else %}
+        <div class="mb-3 p-3 rounded bg-green-100 text-green-800">{{ m }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {# Общие (непривязанные) ошибки формы #}
+  {% if form.non_field_errors %}
+    <div class="mb-3 p-3 rounded bg-red-100 text-red-800">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+  {# Короткое сообщение, если есть ошибки, но не_nf #}
+  {% if form.errors and not form.non_field_errors %}
+    <div class="mb-3 p-3 rounded bg-red-100 text-red-800">
+      {% trans "Bitte prüfen Sie die Eingaben." %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'register' %}" class="space-y-4" novalidate>
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="{{ form.username.id_for_label }}">
+        {% trans "Benutzername" %}
+      </label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="{{ form.email.id_for_label }}">E-Mail</label>
+      {{ form.email }}
+      {% if form.email.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.email.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="{{ form.password1.id_for_label }}">
+        {% trans "Passwort" %}
+      </label>
+      {{ form.password1 }}
+      {% if form.password1.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.password1.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="{{ form.password2.id_for_label }}">
+        {% trans "Passwort wiederholen" %}
+      </label>
+      {{ form.password2 }}
+      {% if form.password2.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.password2.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <button class="w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      {% trans "Registrieren" %}
+    </button>
+  </form>
+
+  <p class="mt-4 text-sm">
+    {% trans "Schon ein Konto?" %} <a class="underline" href="{% url 'login' %}">{% trans "Anmelden" %}</a><br>
+    {% trans "Aktivierungslink nicht erhalten?" %} <a class="underline" href="{% url 'resend_activation' %}">{% trans "Erneut senden" %}</a>
+  </p>
+</div>
+{% endblock %}

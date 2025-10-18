@@ -1,0 +1,4 @@
+Django==5.2.5
+django-crispy-forms==2.3
+django-phonenumber-field==8.0.0
+phonenumberslite==8.13.48

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Auftrag erstellen" %} — Mann für eine Stunde{% endblock %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold mb-6">{% trans "Auftrag erstellen" %}</h1>
+
+  {# Сообщения — БЕЗ inline-тернарного оператора #}
+  {% if messages %}
+    <div class="space-y-2 mb-6">
+      {% for m in messages %}
+        {% if 'error' in m.tags %}
+          <div class="p-3 rounded bg-red-100 text-red-800">{{ m }}</div>
+        {% else %}
+          <div class="p-3 rounded bg-green-100 text-green-800">{{ m }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl shadow p-6 grid md:grid-cols-2 gap-6">
+    {% csrf_token %}
+
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium">{% trans "Service" %}</label>
+      {{ form.service }}
+      {% for e in form.service.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+      <p class="text-xs text-gray-500 mt-1">{% trans "Oder eine beliebte Aufgabe wählen" %}</p>
+      {{ form.service_preset }}
+      {% for e in form.service_preset.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">{% trans "Name" %}</label>
+      {{ form.name }}
+      {% for e in form.name.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">E-Mail</label>
+      {{ form.email }}
+      {% for e in form.email.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">{% trans "Telefon" %}</label>
+      {{ form.phone }}
+      {% for e in form.phone.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">{% trans "Adresse" %}</label>
+      {{ form.address }}
+      {% for e in form.address.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">{% trans "Stadt" %}</label>
+      {{ form.city }}
+      {% for e in form.city.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">{% trans "Bevorzugtes Datum/Uhrzeit" %}</label>
+      {{ form.preferred_datetime }}
+      {% if form.preferred_datetime.help_text %}
+        <p class="text-xs text-gray-500 mt-1">{{ form.preferred_datetime.help_text }}</p>
+      {% endif %}
+      {% for e in form.preferred_datetime.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium">{% trans "Beschreibung" %}</label>
+      {{ form.description }}
+      {% for e in form.description.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+    </div>
+
+    {# Фото (если поле есть в форме) #}
+    {% if form.photo %}
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium">{% trans "Foto (optional)" %}</label>
+        {{ form.photo }}
+        {% for e in form.photo.errors %}<p class="text-red-600 text-sm">{{ e }}</p>{% endfor %}
+        <p class="text-xs text-gray-500 mt-1">{% trans "Ein Bild sagt mehr als 1000 Worte: z.B. defekte Steckdose, Möbel, Anschluss…" %}</p>
+      </div>
+    {% endif %}
+
+    <div class="md:col-span-2 flex gap-3">
+      <button class="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold">
+        {% trans "Auftrag senden" %}
+      </button>
+      <a href="{% url 'home' %}" class="px-5 py-3 rounded-xl bg-gray-100">
+        {% trans "Abbrechen" %}
+      </a>
+    </div>
+  </form>
+{% endblock %}
